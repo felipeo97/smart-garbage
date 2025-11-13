@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Basurero Inteligente</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width:800px; margin:40px auto; padding:0 16px; }
+    .card { border:1px solid #ddd; padding:16px; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+    img.preview { max-width:300px; max-height:300px; display:block; margin-top:12px; }
+    pre { background:#f6f6f6; padding:8px; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <h1>Basurero Inteligente</h1>
+
+  <div class="card">
+    <p>Sube una imagen de basura para que el modelo la clasifique en: <strong>caneca, verde, negra, blanca</strong>.</p>
+
+    <input type="file" id="file" accept="image/*" />
+    <button id="send">Clasificar</button>
+
+    <div id="previewArea"></div>
+
+    <h3>Resultado:</h3>
+    <div id="result">Aún no hay resultado.</div>
+  </div>
+
+<script>
+document.getElementById('file').addEventListener('change', (ev) => {
+  const file = ev.target.files[0];
+  const p = document.getElementById('previewArea');
+  p.innerHTML = '';
+  if (!file) return;
+  const img = document.createElement('img');
+  img.className = 'preview';
+  img.src = URL.createObjectURL(file);
+  p.appendChild(img);
+});
+
+document.getElementById('send').addEventListener('click', async () => {
+  const fileInput = document.getElementById('file');
+  if (!fileInput.files.length) return alert('Selecciona una imagen primero');
+  const fd = new FormData();
+  fd.append('image', fileInput.files[0]);
+
+  // Llamada al endpoint que definimos: /api/classify/
+  const res = await fetch('/api/classify/', {
+    method: 'POST',
+    body: fd
+    // No enviamos headers, dejamos al navegador gestionar multipart/form-data
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    document.getElementById('result').innerText = 'Error: ' + (data.error || JSON.stringify(data));
+    return;
+  }
+
+  // Mostrar resultado bonito
+  const all = data.all || {};
+  let html = `<p><strong>Clase:</strong> ${data.label} — <strong>Confianza:</strong> ${(data.probability*100).toFixed(1)}%</p>`;
+  html += '<h4>Probabilidades:</h4><ul>';
+  for (const k in all) {
+    html += `<li>${k}: ${(all[k]*100).toFixed(1)}%</li>`;
+  }
+  html += '</ul>';
+  document.getElementById('result').innerHTML = html;
+});
+</script>
+</body>
+</html>
