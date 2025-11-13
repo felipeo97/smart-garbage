@@ -15,7 +15,7 @@ El proyecto está hecho con **Django (backend y frontend web)** y **Python** par
 - Modelo de IA entrenado localmente con TensorFlow y Keras.  
 - Código simple y educativo para entender el flujo completo.
 
-## Esctructura del proyecto
+## 📁 Esctructura del proyecto
 basurero-inteligente/
 │
 ├── manage.py
@@ -46,11 +46,11 @@ basurero-inteligente/
 └── blanca/
 
 ## Crear entorno virtual
-Ejecutar los siguientes comandos en este orden
-python -m venv .venv
-source .venv/bin/activate       # En Linux/Mac
-.venv\Scripts\activate          # En Windows
-pip install django tensorflow pillow numpy
+- Ejecutar los siguientes comandos en este orden
+- python -m venv .venv
+- source .venv/bin/activate       # En Linux/Mac
+- .venv\Scripts\activate          # En Windows
+- pip install django tensorflow pillow numpy
 
 ## Ejecutar servidor DJango
-python manage.py runserver
+- python manage.py runserver
