@@ -10,6 +10,7 @@
     img.preview { max-width:300px; max-height:300px; display:block; margin-top:12px; }
     pre { background:#f6f6f6; padding:8px; border-radius:6px; }
   </style>
+  <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
   <h1>Basurero Inteligente</h1>
@@ -18,6 +19,7 @@
     <p>Sube una imagen de basura para que el modelo la clasifique en: <strong>caneca, verde, negra, blanca</strong>.</p>
 
     <input type="file" id="file" accept="image/*" />
+    <label for="file" class="custom-file-label">Seleccionar archivo</label>
     <button id="send">Clasificar</button>
 
     <div id="previewArea"></div>
