@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.utils import image_dataset_from_directory
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 import os
 
 BASE_DIR = "dataset"
@@ -16,6 +17,11 @@ train_ds = image_dataset_from_directory(
     batch_size = BATCH_SIZE,
     shuffle = True,
 )
+
+print("=" * 50)
+print("CLASES DETECTADAS:", train_ds.class_names)
+print("NÚMERO DE CLASES:", len(train_ds.class_names))
+print("=" * 50)
 
 val_ds = image_dataset_from_directory(
     os.path.join(BASE_DIR, "val"),
@@ -48,7 +54,9 @@ x = preprocess_input(x)
 x = base_model(x, training=False)
 x = layers.GlobalAveragePooling2D()(x)
 x = layers.Dropout(0.3)(x)
-outputs = layers.Dense(4, activation='softmax')(x)
+#outputs = layers.Dense(4, activation='softmax')(x)
+num_classes = len(train_ds.class_names)
+outputs = layers.Dense(num_classes, activation='softmax')(x)
 model = models.Model(inputs, outputs)
 
 model.compile(optimizer='adam',
@@ -57,9 +65,25 @@ model.compile(optimizer='adam',
 
 model.summary()
 
+callbacks = [
+    ModelCheckpoint(
+        'best_model.keras',
+        monitor='val_accuracy',
+        save_best_only=True,
+        verbose=1
+    ),
+    EarlyStopping(
+        monitor='val_loss',
+        patience=3,
+        restore_best_weights=True,
+        verbose=1
+    )
+]
+
 history = model.fit(train_ds,
     validation_data=val_ds,
-    epochs=EPOCHS)
+    epochs=EPOCHS,
+    callbacks=callbacks)
 
 base_model.trainable = True
 
@@ -76,3 +100,4 @@ history_ft = model.fit(train_ds, validation_data=val_ds, epochs=5)
 
 model.save("model_basura.keras")
 print("Modelo guardado en model_basura.h5 y saved_model_basura/")
+print("Orden de clases:", train_ds.class_names)
